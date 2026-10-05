@@ -28,6 +28,10 @@ CoderHouse-BackEnd/
 │   │   ├── bookings.json
 │   │   └── services.json
 │   │
+│   ├── controllers/
+│   │   ├── bookin.controller.js
+│   │   └── services.controller.js
+│   │
 │   ├── managers/
 │   │   ├── BookingManager.js
 │   │   └── ServiceManager.js
@@ -40,6 +44,7 @@ CoderHouse-BackEnd/
 │   ├── utils/
 │   │
 │   └── app.js
+│   └── server.js
 │
 ├── .env.example
 ├── .gitignore
@@ -49,10 +54,10 @@ CoderHouse-BackEnd/
 
 ⚙️ Instalación
 1. Clonar el repositorio
-git clone https://github.com/MartinfMelendez/CoderHouse-BackEnd.git
+git clone https://github.com/MartinfMelendez/BackEnd-Entrega4
 
 2. Ingresar al proyecto
-cd CoderHouse-BackEnd
+cd BackEnd-Entrega4
 
 3. Instalar las dependencias
 npm install
