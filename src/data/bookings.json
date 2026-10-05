@@ -8,7 +8,11 @@
     "status": "confirmada",
     "services": [
       {
-        "id": 1,
+        "service": 2,
+        "quantity": 3
+      },
+      {
+        "service": 3,
         "quantity": 1
       }
     ]
@@ -22,19 +26,15 @@
     "status": "confirmada",
     "services": [
       {
-        "serviceId": 2,
-        "quantity": 3
-      },
-      {
-        "serviceId": 5,
-        "quantity": 3
-      },
-      {
-        "serviceId": 8,
+        "service": 5,
         "quantity": 1
       },
       {
-        "service": 5,
+        "service": 3,
+        "quantity": 1
+      },
+      {
+        "service": 2,
         "quantity": 1
       }
     ]

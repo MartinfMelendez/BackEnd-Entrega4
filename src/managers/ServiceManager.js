@@ -1,112 +1,161 @@
 import fs from 'fs/promises'
-import raiz from '../utils/path.js';
+import raiz from '../utils/path.js'
 
 const PATH = raiz + '/data/services.json'
 
-const services = JSON.parse(
-   await fs.readFile(PATH, "utf-8")
-);
 
-class Service {
-   static id = services.length > 0
-        ? Math.max(...services.map(service => service.id)) + 1
-        : 1;
+async function getAllServices() {
 
-    constructor(name, description, duration, price, category, available) {
-        this.id = Service.id++;
-        this.name = name;
-        this.description = description;
-        this.duration = duration;
-        this.price = price;
-        this.category = category;
-        this.available = available;
-    }
-
-}
-
-
-export async function getAllServices() { //Funcion para leer los archivos con FileSystem
     try {
-        const archivoCompleto = await fs.readFile(PATH, 'utf-8')
-        const datosArchivo = JSON.parse(archivoCompleto)
-        return datosArchivo
+
+        const fileContent = await fs.readFile(PATH, 'utf-8')
+
+        return JSON.parse(fileContent)
+
     } catch (error) {
-        return { error: "Error al leer el archivo", mesagge: error.message }
-    }
-}
 
+        if (error.code === 'ENOENT') {
 
-export async function getServiceById(id) {
-    try {
+            await fs.writeFile(PATH, '[]')
 
-        const datos = await getAllServices()
-
-        const service = datos.find(service => service.id == id);
-        if (!service) {
-            throw new Error("Servicio no encontrado")
+            return []
         }
-        return service;
-    }
 
-    catch (error) {
-        return { error: "Error al obtener el servicio", message: error.message, status: 404 }
+        throw error
     }
 }
 
-export async function addService(name, description, duration, price, category, available) {
-    try {
-        if (!name || !description || !duration || !price || !category || available === undefined) {
-            throw new Error("Todos los campos son obligatorios")
-        }
-        if (!price || isNaN(price) || price <= 0) {
-            throw new Error("El precio debe ser un número positivo")
-        }
-        const newService = new Service(name, description, duration, price, category, available)
 
-        const services = await getAllServices()
-        services.push(newService)
+async function getServiceById(id) {
 
-        await fs.writeFile(PATH, JSON.stringify(services, null, 2), 'utf-8')
-        return newService
+    const services = await getAllServices()
 
+    const service = services.find(
+        service => service.id === Number(id)
+    )
+
+    if (!service) {
+        throw new Error('Servicio no encontrado')
     }
-    catch (error) {
-        return { error: "Error al agregar el servicio", message: error.message }
-    }
+
+    return service
 }
 
-export async function updateService(nid, data) {
-    try {
-        let service = await getServiceById(nid);
-        if (service.status === 404) { throw new Error("Servicio no encontrado") }
 
-        const{id, ...rest} = data; // Evitar actualizar el id
-        service = { ...service, ...rest }
-        const services = await getAllServices()
-        const index = services.findIndex(service => service.id == nid);
-        services[index] = service;
-        await fs.writeFile(PATH, JSON.stringify(services, null, 2), 'utf-8')
-        return service;
+async function addService(
+    name,
+    description,
+    duration,
+    price,
+    category,
+    available
+) {
+
+    if (
+        !name ||
+        !description ||
+        !duration ||
+        !price ||
+        !category ||
+        available === undefined
+    ) {
+        throw new Error('Todos los campos son obligatorios')
     }
 
-    catch (error) {
-        return { error: "Error al actualizar el servicio", message: error.message }
+    if (isNaN(price) || Number(price) <= 0) {
+        throw new Error('El precio debe ser un número positivo')
     }
+
+    const services = await getAllServices()
+
+    const newId = services.length > 0
+        ? Math.max(...services.map(service => service.id)) + 1
+        : 1
+
+    const newService = {
+        id: newId,
+        name,
+        description,
+        duration,
+        price,
+        category,
+        available
+    }
+
+    services.push(newService)
+
+    await fs.writeFile(
+        PATH,
+        JSON.stringify(services, null, 2),
+        'utf-8'
+    )
+
+    return newService
 }
 
-export async function deleteService(id) {
-    try {
-        const services = await getAllServices()
-        const index = services.findIndex(service => service.id == id);
-        if (index === -1) {
-            throw new Error("Servicio no encontrado")
-        }
-        const serviceDeleted = services.splice(index, 1);
-        await fs.writeFile(PATH, JSON.stringify(services, null, 2), 'utf-8')
-        return serviceDeleted[0]
+
+async function updateService(id, data) {
+
+    const services = await getAllServices()
+
+    const index = services.findIndex(
+        service => service.id === Number(id)
+    )
+
+    if (index === -1) {
+        throw new Error('Servicio no encontrado')
     }
-    catch (error) {
-        return { error: "Error al eliminar el servicio", message: error.message }
+
+    const { id: ignoredId, ...rest } = data
+
+    const updatedService = {
+        ...services[index],
+        ...rest,
+        id: services[index].id
     }
+
+    services[index] = updatedService
+
+    await fs.writeFile(
+        PATH,
+        JSON.stringify(services, null, 2),
+        'utf-8'
+    )
+
+    return updatedService
 }
+
+
+async function deleteService(id) {
+
+    const services = await getAllServices()
+
+    const index = services.findIndex(
+        service => service.id === Number(id)
+    )
+
+    if (index === -1) {
+        throw new Error('Servicio no encontrado')
+    }
+
+    const serviceDeleted = services.splice(index, 1)
+
+    await fs.writeFile(
+        PATH,
+        JSON.stringify(services, null, 2),
+        'utf-8'
+    )
+
+    return serviceDeleted[0]
+}
+
+
+export {
+    getAllServices,
+    getServiceById,
+    addService,
+    updateService,
+    deleteService
+}
+
 

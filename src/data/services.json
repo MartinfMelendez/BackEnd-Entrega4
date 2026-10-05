@@ -1,11 +1,11 @@
 [
   {
     "id": 2,
-    "name": "Masaje relajante",
-    "description": "Masaje corporal para aliviar tensión y estrés.",
-    "duration": 60,
-    "price": 15000,
-    "category": "Bienestar",
+    "name": "ASD",
+    "description": "Servicio de ASD",
+    "duration": 16,
+    "price": 2,
+    "category": "ASD",
     "available": true
   },
   {
